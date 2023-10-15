@@ -81,7 +81,7 @@ public class PixelCharacter : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(myBullet, transform.position, Quaternion.identity);
+            Instantiate(myBullet, transform.position + new Vector3(5, 6, 0) / ppu, Quaternion.identity);
         }
 
         if(!canDoubleJump && OverlapTile(wallTile, transform.position + new Vector3(0, -1, 0) / ppu))
@@ -90,7 +90,6 @@ public class PixelCharacter : MonoBehaviour
         }
 
         velocity.y += gravity;
-        //velocity.y = Mathf.Clamp(velocity.y, 0.0f, )
 
         MoveX(velocity.x);
         MoveY(velocity.y);

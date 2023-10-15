@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 using UnityEngine.U2D;
+using UnityEngine.UIElements;
+using UnityEngine.WSA;
 
 public class Bullet : MonoBehaviour
 {
@@ -12,7 +14,8 @@ public class Bullet : MonoBehaviour
     private Tilemap tilemap;
     private Sprite sprite;
 
-    [SerializeField] private TileBase wallTile, thornTile, bridgeTile;
+    [SerializeField] private TileBase emptyTile, wallTile, thornTile, bridgeTile;
+    [SerializeField] private float speed;
 
     private Vector2 velocity;
     private float xRemainder, yRemainder;
@@ -26,13 +29,21 @@ public class Bullet : MonoBehaviour
     {
         xRemainder = 0.0f;
         yRemainder = 0.0f;
-        velocity = Vector2.right;
+        velocity = Vector2.right * speed;
 
         tilemap = FindObjectOfType<Tilemap>();
 
     }
     void Update()
     {
+        Vector3Int coord = tilemap.WorldToCell(transform.position);
+
+        if (tilemap.GetTile(coord) == thornTile)
+        {
+            tilemap.SetTile(coord, emptyTile);
+            Destroy(gameObject);
+        }
+
         MoveX(velocity.x);
         MoveY(velocity.y);
     }
@@ -47,15 +58,17 @@ public class Bullet : MonoBehaviour
             int sign = Math.Sign(move);
             while (move != 0)
             {
-                if (!OverlapTile(wallTile, transform.position + new Vector3(sign, 0, 0) / ppu))
-                {
-                    transform.Translate(new Vector3(sign, 0, 0) / ppu);
-                    move -= sign;
-                }
-                else
+                var direction = new Vector3(sign, 0, 0) / ppu;
+
+                if (OverlapTile(wallTile, transform.position + direction))
                 {
                     Destroy(gameObject);
                     break;
+                }
+                else
+                {
+                    transform.Translate(direction);
+                    move -= sign;
                 }
 
             }
@@ -105,7 +118,10 @@ public class Bullet : MonoBehaviour
         tilemap.GetTilesBlockNonAlloc(area, tiles);
         for (int i = 0; i < tiles.Length; i++)
         {
-            if (tiles[i] == tile) return true;
+            if (tiles[i] == tile)
+            {
+                return true;
+            }
         }
         return false;
     }
