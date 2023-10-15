@@ -14,6 +14,7 @@ public class PixelCharacter : MonoBehaviour
 
     [SerializeField] private TileBase wallTile, enterTile, exitTile, thornTile, bridgeTile;
     [SerializeField] private float walkSpeed, gravity, jumpForce;
+    [SerializeField] private Bullet myBullet;
 
     private Vector2 velocity;
     private float xRemainder, yRemainder;
@@ -76,6 +77,11 @@ public class PixelCharacter : MonoBehaviour
         if(Input.GetKeyDown(KeyCode.DownArrow) && OverlapTile(exitTile, transform.position))
         {
             exitLevel?.Invoke();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Instantiate(myBullet, transform.position, Quaternion.identity);
         }
 
         if(!canDoubleJump && OverlapTile(wallTile, transform.position + new Vector3(0, -1, 0) / ppu))
