@@ -14,7 +14,7 @@ public class Bullet : MonoBehaviour
     private Tilemap tilemap;
     private Sprite sprite;
 
-    [SerializeField] private TileBase emptyTile, wallTile, thornTile, bridgeTile;
+    [SerializeField] private TileBase emptyTile, wallTile, fragileTile, thornTile, bridgeTile;
     [SerializeField] private float speed;
 
     private Vector2 velocity;
@@ -37,6 +37,9 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         Vector3Int coord = tilemap.WorldToCell(transform.position);
+        TileBase prout = tilemap.GetTile(coord);
+        
+        
 
         if (tilemap.GetTile(coord) == thornTile)
         {

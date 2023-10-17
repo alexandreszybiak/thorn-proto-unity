@@ -7,7 +7,7 @@ using UnityEngine.Tilemaps;
 public class GrowThorn : MonoBehaviour
 {
     private Tilemap tilemap;
-    [SerializeField] private TileBase emptyTile, wallTile, thornTile, bridgeTile;
+    [SerializeField] private TileBase emptyTile, wallTile, fragileTile, thornTile, bridgeTile;
     private float nextGrowTime;
     const float growInterval = 0.8f;
     private void Awake()
@@ -37,7 +37,9 @@ public class GrowThorn : MonoBehaviour
                 TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
                 if (tile != emptyTile) continue;
                 if (!HasNeighbour4Dir(thornTile, x, y)) continue;
-                if (!HasNeighbour8Dir(wallTile, x, y) && !HasNeighbourBelow(bridgeTile, x, y)) continue;
+                if (!HasNeighbour8Dir(wallTile, x, y)
+                    && !HasNeighbour8Dir(fragileTile, x, y)
+                    && !HasNeighbourBelow(bridgeTile, x, y)) continue;
                 nextGrowCells.Add(new Vector3Int(x, y, 0));
             }
         }

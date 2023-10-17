@@ -4782,6 +4782,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   emptyTile: {fileID: 11400000, guid: 30e2fdcc794b15f418d1c5df2352d246, type: 2}
   wallTile: {fileID: 11400000, guid: 459306e4129a6ba4eb30224b19575b49, type: 2}
+  fragileTile: {fileID: 11400000, guid: 1fe52ed4ea095ba4894fc6288ad48b65, type: 2}
   thornTile: {fileID: 11400000, guid: 47a867ef0a0f2a04db7f3431f51d803d, type: 2}
   bridgeTile: {fileID: 11400000, guid: f80857e37720d9c4bb674fdf3c8952eb, type: 2}
 --- !u!1 &2081467564

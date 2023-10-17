@@ -12,7 +12,8 @@ public class PixelCharacter : MonoBehaviour
 {
     private Tilemap tilemap;
 
-    [SerializeField] private TileBase wallTile, enterTile, exitTile, thornTile, bridgeTile;
+    [SerializeField] private TileBase wallTile, fragileTile, enterTile, exitTile, thornTile, bridgeTile;
+    [SerializeField] private TileTypes tileTypes;
     [SerializeField] private float walkSpeed, gravity, jumpForce;
     [SerializeField] private Bullet myBullet;
 
@@ -135,7 +136,7 @@ public class PixelCharacter : MonoBehaviour
             int sign = Math.Sign(move);
             while (move != 0)
             {
-                if (OverlapTile(wallTile, transform.position + new Vector3(0, sign, 0) / ppu))
+                if (OverlapTile(tileTypes.solidTiles, transform.position + new Vector3(0, sign, 0) / ppu))
                 {
                     velocity.y = 0.0f;
                     break;
@@ -156,7 +157,7 @@ public class PixelCharacter : MonoBehaviour
 
     }
     private bool OverlapTile(TileBase tile, Vector3 position)
-    {
+    {        
         if (tilemap == null) return false;
 
         Vector3Int coord1 = tilemap.WorldToCell(position);
@@ -167,6 +168,22 @@ public class PixelCharacter : MonoBehaviour
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tiles[i] == tile) return true;
+        }
+        return false;
+    }
+
+    private bool OverlapTile(List<TileBase> tileList, Vector3 position)
+    {
+        if (tilemap == null) return false;
+
+        Vector3Int coord1 = tilemap.WorldToCell(position);
+        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
+        TileBase[] tiles = new TileBase[area.size.x * area.size.y];
+        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (tileList.Contains(tiles[i])) return true;
         }
         return false;
     }
