@@ -50,10 +50,7 @@ public class PixelCharacter : MonoBehaviour
 
     void Update()
     {
-        if (OverlapTile(wallTile, transform.position + new Vector3(0, -1, 0) / ppu) || OverlapTile(bridgeTile, transform.position + new Vector3(0, -1, 0) / ppu))
-        {
-            onFloor = true;
-        }
+        onFloor = OverlapTile(wallTile, transform.position + new Vector3(0, -1, 0) / ppu) || OverlapTile(bridgeTile, transform.position + new Vector3(0, -1, 0) / ppu);
 
         velocity.x = 0.0f;
 
@@ -85,7 +82,7 @@ public class PixelCharacter : MonoBehaviour
             Instantiate(myBullet, transform.position + new Vector3(5, 6, 0) / ppu, Quaternion.identity);
         }
 
-        if(!canDoubleJump && OverlapTile(wallTile, transform.position + new Vector3(0, -1, 0) / ppu))
+        if(!canDoubleJump && OverlapTile(tileTypes.solidTiles, transform.position + new Vector3(0, -1, 0) / ppu))
         {
             canDoubleJump = true;
         }
@@ -111,7 +108,7 @@ public class PixelCharacter : MonoBehaviour
             int sign = Math.Sign(move);
             while(move != 0)
             {
-                if (!OverlapTile(wallTile, transform.position + new Vector3(sign, 0, 0) / ppu))
+                if (!OverlapTile(tileTypes.solidTiles, transform.position + new Vector3(sign, 0, 0) / ppu))
                 {
                     transform.Translate(new Vector3(sign, 0, 0) / ppu);
                     move -= sign;

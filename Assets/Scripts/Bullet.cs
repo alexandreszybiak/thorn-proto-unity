@@ -15,6 +15,7 @@ public class Bullet : MonoBehaviour
     private Sprite sprite;
 
     [SerializeField] private TileBase emptyTile, wallTile, fragileTile, thornTile, bridgeTile;
+    [SerializeField] private TileTypes tileTypes;
     [SerializeField] private float speed;
 
     private Vector2 velocity;
@@ -36,19 +37,20 @@ public class Bullet : MonoBehaviour
     }
     void Update()
     {
+        
+        MoveX(velocity.x);
+        MoveY(velocity.y);
+
         Vector3Int coord = tilemap.WorldToCell(transform.position);
         TileBase prout = tilemap.GetTile(coord);
-        
-        
 
-        if (tilemap.GetTile(coord) == thornTile)
+
+
+        if (tileTypes.breakableTiles.Contains(tilemap.GetTile(coord)))
         {
             tilemap.SetTile(coord, emptyTile);
             Destroy(gameObject);
         }
-
-        MoveX(velocity.x);
-        MoveY(velocity.y);
     }
 
     private void MoveX(float amount)
@@ -63,20 +65,16 @@ public class Bullet : MonoBehaviour
             {
                 var direction = new Vector3(sign, 0, 0) / ppu;
 
-                if (OverlapTile(wallTile, transform.position + direction))
-                {
-                    Destroy(gameObject);
-                    break;
-                }
-                else
-                {
-                    transform.Translate(direction);
-                    move -= sign;
-                }
+                bool shouldStop = false;
 
+                ManageOverlap(transform.position + direction, out shouldStop);
+
+                if (shouldStop) break;
+
+                transform.Translate(direction);
+                move -= sign;
             }
         }
-
     }
 
     private void MoveY(float amount)
@@ -89,7 +87,7 @@ public class Bullet : MonoBehaviour
             int sign = Math.Sign(move);
             while (move != 0)
             {
-                if (OverlapTile(wallTile, transform.position + new Vector3(0, sign, 0) / ppu))
+                if (OverlapTile(tileTypes.solidTiles, transform.position + new Vector3(0, sign, 0) / ppu))
                 {
                     Destroy(gameObject);
                     break;
@@ -110,6 +108,35 @@ public class Bullet : MonoBehaviour
 
     }
 
+    private void ManageOverlap(Vector3 position, out bool stopMovement)
+    {
+        stopMovement = false;
+        var tiles = new List<Vector3Int>();
+
+        Vector3Int coord1 = tilemap.WorldToCell(position);
+        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+
+        for(int x = coord1.x; x < coord2.x; x++)
+        {
+            for(int y = coord1.y; y < coord2.y; y++)
+            {
+                var coord = new Vector3Int(x, y, 0);
+                var tile = tilemap.GetTile(coord);
+
+                if (tileTypes.breakableTiles.Contains(tile))
+                {
+                    tilemap.SetTile(coord, emptyTile);
+                    stopMovement = true;
+                    Collide();
+                }
+                if (tileTypes.solidTiles.Contains(tile))
+                {
+                    stopMovement = true;
+                    Collide();
+                }
+            }
+        }
+    }
     private bool OverlapTile(TileBase tile, Vector3 position)
     {
         if (tilemap == null) return false;
@@ -128,4 +155,26 @@ public class Bullet : MonoBehaviour
         }
         return false;
     }
+
+    private bool OverlapTile(List<TileBase> tileList, Vector3 position)
+    {
+        if (tilemap == null) return false;
+
+        Vector3Int coord1 = tilemap.WorldToCell(position);
+        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
+        TileBase[] tiles = new TileBase[area.size.x * area.size.y];
+        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (tileList.Contains(tiles[i])) return true;
+        }
+        return false;
+    }
+
+    private void Collide()
+    {
+        Destroy(gameObject);
+    }
+
 }

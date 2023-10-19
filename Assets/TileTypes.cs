@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 public class TileTypes : ScriptableObject
 {
     public List<TileBase> solidTiles;
+    public List<TileBase> breakableTiles;
     public List<TileBase> floorTiles;
     public List<TileBase> bridgeTiles;
 }
