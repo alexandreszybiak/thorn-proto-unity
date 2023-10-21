@@ -12,8 +12,11 @@ public class PixelCharacter : MonoBehaviour
 {
     private Tilemap tilemap;
 
+
     [SerializeField] private TileTypes tileTypes;
+    [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float walkSpeed, gravity, jumpForce;
+    [SerializeField] private Vector2 bulletSpawnPoint;
     [SerializeField] private Bullet myBullet;
 
     private Vector2 velocity;
@@ -23,7 +26,6 @@ public class PixelCharacter : MonoBehaviour
     private float facing;
 
     private Sprite sprite;
-    private SpriteRenderer spriteRenderer;
 
     private const float ppu = 12.0f;
 
@@ -99,7 +101,12 @@ public class PixelCharacter : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            Bullet newBullet = Instantiate(myBullet, transform.position + new Vector3(5, 6, 0) / ppu, Quaternion.identity);
+            float flipX = spriteRenderer.flipX ? -1.0f : 1.0f;
+            Vector3 spawnPoint = Vector3.zero;
+            spawnPoint.x = Mathf.Round(bulletSpawnPoint.x * ppu) / ppu * flipX;
+            spawnPoint.y = Mathf.Round(bulletSpawnPoint.y * ppu) / ppu;
+            
+            Bullet newBullet = Instantiate(myBullet, transform.position + spawnPoint, Quaternion.identity);
             newBullet.Velocity = new Vector2(facing, 0.0f);
             //myBullet.SetDirection(facing);
         }
@@ -217,5 +224,12 @@ public class PixelCharacter : MonoBehaviour
             }
         }
         return Vector3.zero;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        float flip = spriteRenderer.flipX ? -1.0f : 1.0f;
+        //float flip = 1;
+        Gizmos.DrawWireSphere(new Vector3(transform.position.x + bulletSpawnPoint.x * flip, transform.position.y + bulletSpawnPoint.y, 0), 0.25f);
     }
 }

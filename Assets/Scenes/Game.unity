@@ -221,9 +221,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tileTypes: {fileID: 11400000, guid: 3d0bfdf87fe99684fa5c38bee70ed036, type: 2}
+  spriteRenderer: {fileID: 875606724}
   walkSpeed: 0.7
   gravity: -0.05
   jumpForce: 1.8
+  bulletSpawnPoint: {x: 0.4166667, y: 0.4166667}
   myBullet: {fileID: 6358886354979347415, guid: 547a6d8c765b8e6469a8915070814936, type: 3}
 --- !u!1 &1925717203
 GameObject:
