@@ -12,7 +12,6 @@ public class PixelCharacter : MonoBehaviour
 {
     private Tilemap tilemap;
 
-
     [SerializeField] private TileTypes tileTypes;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float walkSpeed, gravity, jumpForce;
@@ -31,11 +30,17 @@ public class PixelCharacter : MonoBehaviour
 
     public event Action exitLevel;
     public event Action died;
+
+    private Animator animator;
+    private string state;
+
     private void Awake()
     {
         facing = 1.0f;
         spriteRenderer = GetComponent<SpriteRenderer>();
         sprite = spriteRenderer.sprite;
+        animator = GetComponent<Animator>();
+        state = "CharacterIdle";
     }
     void Start()
     {
@@ -51,6 +56,17 @@ public class PixelCharacter : MonoBehaviour
 
         tilemap = FindObjectOfType<Tilemap>();
         transform.position = GetEnterCoord();
+
+        animator.CrossFade("CharacterIdle", 0);
+    }
+
+    private void ChangeState(string animation)
+    {
+        if(state != animation)
+        {
+            animator.CrossFade(animation, 0);
+            state = animation;
+        }
     }
 
     void Update()
@@ -112,6 +128,9 @@ public class PixelCharacter : MonoBehaviour
         }
 
         velocity.y += gravity;
+
+        if (velocity.x == 0.0f) ChangeState("CharacterIdle");
+        else ChangeState("CharacterRun");
 
         MoveX(velocity.x);
         MoveY(velocity.y);

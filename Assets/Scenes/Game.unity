@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 875606725}
   - component: {fileID: 875606724}
   - component: {fileID: 875606726}
+  - component: {fileID: 875606727}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -182,7 +183,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 1
-  m_Sprite: {fileID: -39828791, guid: 0a3c2670eb0506b46a7558a33429c1a9, type: 3}
+  m_Sprite: {fileID: 628929580, guid: b67612ae7844cdf4d903633d31c0b58d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -227,6 +228,27 @@ MonoBehaviour:
   jumpForce: 1.8
   bulletSpawnPoint: {x: 0.4166667, y: 0.4166667}
   myBullet: {fileID: 6358886354979347415, guid: 547a6d8c765b8e6469a8915070814936, type: 3}
+--- !u!95 &875606727
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875606723}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: f37f1f7c66a59844392f0245a67d6709, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &1925717203
 GameObject:
   m_ObjectHideFlags: 0
