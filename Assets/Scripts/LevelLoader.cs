@@ -48,6 +48,7 @@ public class LevelLoader : MonoBehaviour
     {
         character.gameObject.SetActive(true);
         op.completed -= OnLoadCompleted;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName(levelList.levels[currentLevel]));
     }
 }
 

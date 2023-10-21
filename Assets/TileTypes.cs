@@ -11,4 +11,6 @@ public class TileTypes : ScriptableObject
     public List<TileBase> breakableTiles;
     public List<TileBase> floorTiles;
     public List<TileBase> bridgeTiles;
+
+    public TileBase emptyTile, wallTile, fragileTile, enterTile, exitTile, thornTile, bridgeTile;
 }

@@ -14,11 +14,22 @@ public class Bullet : MonoBehaviour
     private Tilemap tilemap;
     private Sprite sprite;
 
-    [SerializeField] private TileBase emptyTile, wallTile, fragileTile, thornTile, bridgeTile;
     [SerializeField] private TileTypes tileTypes;
     [SerializeField] private float speed;
 
-    private Vector2 velocity;
+    private Vector2 myVelocity;
+    public Vector2 Velocity
+    {
+        get
+        {
+            return myVelocity;
+        }
+        set
+        {
+            myVelocity = value * speed;
+        }
+    }
+
     private float xRemainder, yRemainder;
 
     private void Awake()
@@ -30,7 +41,6 @@ public class Bullet : MonoBehaviour
     {
         xRemainder = 0.0f;
         yRemainder = 0.0f;
-        velocity = Vector2.right * speed;
 
         tilemap = FindObjectOfType<Tilemap>();
 
@@ -38,19 +48,10 @@ public class Bullet : MonoBehaviour
     void Update()
     {
         
-        MoveX(velocity.x);
-        MoveY(velocity.y);
+        MoveX(myVelocity.x);
+        MoveY(myVelocity.y);
 
-        Vector3Int coord = tilemap.WorldToCell(transform.position);
-        TileBase prout = tilemap.GetTile(coord);
-
-
-
-        if (tileTypes.breakableTiles.Contains(tilemap.GetTile(coord)))
-        {
-            tilemap.SetTile(coord, emptyTile);
-            Destroy(gameObject);
-        }
+        
     }
 
     private void MoveX(float amount)
@@ -92,7 +93,7 @@ public class Bullet : MonoBehaviour
                     Destroy(gameObject);
                     break;
                 }
-                else if (sign == -1 && OverlapTile(bridgeTile, transform.position + new Vector3(0, sign, 0) / ppu))
+                else if (sign == -1 && OverlapTile(tileTypes.bridgeTile, transform.position + new Vector3(0, sign, 0) / ppu))
                 {
                     Destroy(gameObject);
                     break;
@@ -116,24 +117,25 @@ public class Bullet : MonoBehaviour
         Vector3Int coord1 = tilemap.WorldToCell(position);
         Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
 
-        for(int x = coord1.x; x < coord2.x; x++)
+        for(int x = coord1.x; x <= coord2.x; x++)
         {
-            for(int y = coord1.y; y < coord2.y; y++)
+            for(int y = coord1.y; y <= coord2.y; y++)
             {
                 var coord = new Vector3Int(x, y, 0);
                 var tile = tilemap.GetTile(coord);
 
+                if (tile == tileTypes.wallTile)
+                {
+                    stopMovement = true;
+                    Collide();
+                }
                 if (tileTypes.breakableTiles.Contains(tile))
                 {
-                    tilemap.SetTile(coord, emptyTile);
+                    tilemap.SetTile(coord, tileTypes.emptyTile);
                     stopMovement = true;
                     Collide();
                 }
-                if (tileTypes.solidTiles.Contains(tile))
-                {
-                    stopMovement = true;
-                    Collide();
-                }
+                
             }
         }
     }
@@ -176,5 +178,4 @@ public class Bullet : MonoBehaviour
     {
         Destroy(gameObject);
     }
-
 }

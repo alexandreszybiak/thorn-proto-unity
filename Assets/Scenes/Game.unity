@@ -220,12 +220,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5723bf252e99f784a86f7de45610ac3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallTile: {fileID: 11400000, guid: 459306e4129a6ba4eb30224b19575b49, type: 2}
-  fragileTile: {fileID: 11400000, guid: 1fe52ed4ea095ba4894fc6288ad48b65, type: 2}
-  enterTile: {fileID: 11400000, guid: 6f806b99a03a695409fdb2f5d8fa52ad, type: 2}
-  exitTile: {fileID: 11400000, guid: 047df13583f57544a98dfd6920b0de57, type: 2}
-  thornTile: {fileID: 11400000, guid: 47a867ef0a0f2a04db7f3431f51d803d, type: 2}
-  bridgeTile: {fileID: 11400000, guid: f80857e37720d9c4bb674fdf3c8952eb, type: 2}
   tileTypes: {fileID: 11400000, guid: 3d0bfdf87fe99684fa5c38bee70ed036, type: 2}
   walkSpeed: 0.7
   gravity: -0.05
