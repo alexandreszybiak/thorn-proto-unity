@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering.Universal;
-using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 public class PixelCharacter : MonoBehaviour
@@ -32,6 +27,10 @@ public class PixelCharacter : MonoBehaviour
     public event Action died;
 
     private Animator animator;
+    private const string idleAnimation = "CharacterIdle";
+    private const string runAnimation = "CharacterRun";
+    private const string jumpAnimation = "CharacterJump";
+    private const string fallAnimation = "CharacterFall";
     private string state;
 
     private void Awake()
@@ -40,7 +39,7 @@ public class PixelCharacter : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         sprite = spriteRenderer.sprite;
         animator = GetComponent<Animator>();
-        state = "CharacterIdle";
+        state = idleAnimation;
     }
     void Start()
     {
@@ -57,7 +56,7 @@ public class PixelCharacter : MonoBehaviour
         tilemap = FindObjectOfType<Tilemap>();
         transform.position = GetEnterCoord();
 
-        animator.CrossFade("CharacterIdle", 0);
+        animator.CrossFade(idleAnimation, 0);
     }
 
     private void ChangeState(string animation)
@@ -129,13 +128,26 @@ public class PixelCharacter : MonoBehaviour
 
         velocity.y += gravity;
 
-        if (velocity.x == 0.0f) ChangeState("CharacterIdle");
-        else ChangeState("CharacterRun");
+        
 
         MoveX(velocity.x);
         MoveY(velocity.y);
 
-        if(OverlapTile(tileTypes.thornTile, transform.position))
+        if(onFloor)
+        {
+            if (velocity.x == 0.0f) ChangeState(idleAnimation);
+            else ChangeState(runAnimation);
+        }
+        else
+        {
+            if (velocity.y < 0.0f) ChangeState(fallAnimation); else ChangeState(jumpAnimation);
+        }
+
+
+
+
+
+        if (OverlapTile(tileTypes.thornTile, transform.position))
         {
             died?.Invoke();
         }
