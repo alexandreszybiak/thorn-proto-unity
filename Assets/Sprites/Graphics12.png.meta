@@ -186,15 +186,15 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Graphics12_3
+      name: ThornSprite_Stem
       rect:
         serializedVersion: 2
         x: 36
         y: 12
-        width: 12
-        height: 12
+        width: 6
+        height: 6
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
@@ -458,6 +458,27 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ThornTile_Grown
+      rect:
+        serializedVersion: 2
+        x: 42
+        y: 12
+        width: 6
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: c8970f83148fc344bb0ca6c870896b7a
+      internalID: 750868381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     physicsShape: []
     bones: []
@@ -478,13 +499,14 @@ TextureImporter:
       Graphics12_14: -1706179029
       Graphics12_15: -55895028
       Graphics12_2: -1445382408
-      Graphics12_3: -963277911
       Graphics12_4: 312317953
       Graphics12_5: 1695772563
       Graphics12_6: -1092678874
       Graphics12_7: -214542185
       Graphics12_8: -1707807317
       Graphics12_9: 628929580
+      ThornSprite_Stem: -963277911
+      ThornTile_Grown: 750868381
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

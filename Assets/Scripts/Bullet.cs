@@ -38,7 +38,7 @@ public class Bullet : MonoBehaviour
         xRemainder = 0.0f;
         yRemainder = 0.0f;
 
-        tilemap = FindObjectOfType<Tilemap>();
+        tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
 
     }
     void Update()

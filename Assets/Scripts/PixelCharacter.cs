@@ -53,7 +53,7 @@ public class PixelCharacter : MonoBehaviour
         yRemainder = 0.0f;
         velocity = Vector2.zero;
 
-        tilemap = FindObjectOfType<Tilemap>();
+        tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
         transform.position = GetEnterCoord();
 
         animator.CrossFade(idleAnimation, 0);
