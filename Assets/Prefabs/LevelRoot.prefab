@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 246253427972401925}
   - component: {fileID: 5210717808973740753}
   - component: {fileID: 711766835917011536}
+  - component: {fileID: 4379140519807647293}
   m_Layer: 0
   m_Name: ThornTilemap
   m_TagString: Untagged
@@ -88,8 +89,8 @@ Tilemap:
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Origin: {x: -24, y: -14, z: 0}
-  m_Size: {x: 27, y: 28, z: 1}
+  m_Origin: {x: -28, y: -16, z: 0}
+  m_Size: {x: 56, y: 32, z: 1}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -158,6 +159,19 @@ TilemapRenderer:
   m_Mode: 0
   m_DetectChunkCullingBounds: 0
   m_MaskInteraction: 0
+--- !u!114 &4379140519807647293
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2179355432380846415}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c47e4b867d00094b98299675ac32e28, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tileTypes: {fileID: 11400000, guid: 3d0bfdf87fe99684fa5c38bee70ed036, type: 2}
 --- !u!1 &3791558891630648526
 GameObject:
   m_ObjectHideFlags: 0

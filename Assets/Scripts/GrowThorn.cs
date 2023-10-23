@@ -1,21 +1,27 @@
+using System;
 using System.Collections.Generic;
+using System.Drawing;
+using Unity.PlasticSCM.Editor.UI;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class GrowThorn : MonoBehaviour
 {
-    private Tilemap tilemap;
-    [SerializeField] private TileBase emptyTile, wallTile, fragileTile, thornTile, bridgeTile;
+    private Tilemap levelTilemap, thornTilemap;
+    [SerializeField] private TileTypes tileTypes;
     private float nextGrowTime;
     const float growInterval = 0.8f;
     private void Awake()
     {
-        tilemap = GetComponent<Tilemap>();
+        levelTilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        thornTilemap = GetComponent<Tilemap>();
         nextGrowTime = 0.0f;
     }
 
     private void Update()
     {
+        
+
         if(Time.time >= nextGrowTime)
         {
             nextGrowTime = Time.time + growInterval;
@@ -27,53 +33,62 @@ public class GrowThorn : MonoBehaviour
     private void Grow()
     {
         List<Vector3Int> nextGrowCells = new List<Vector3Int>();
-        BoundsInt bounds = tilemap.cellBounds;
+        BoundsInt bounds = thornTilemap.cellBounds;
         for(int x = bounds.xMin; x < bounds.xMax; x++)
         {
             for(int y = bounds.yMin; y < bounds.yMax; y++)
             {
-                TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
-                if (tile != emptyTile) continue;
-                if (!HasNeighbour4Dir(thornTile, x, y)) continue;
-                if (!HasNeighbour8Dir(wallTile, x, y)
-                    && !HasNeighbour8Dir(fragileTile, x, y)
-                    && !HasNeighbourBelow(bridgeTile, x, y)) continue;
+                Vector3Int thornCellPos = new Vector3Int(x, y, 0);
+                TileBase tileOnThorn = thornTilemap.GetTile(thornCellPos);
+                Vector3Int levelCellPos = levelTilemap.WorldToCell(thornTilemap.CellToWorld(thornCellPos));
+                TileBase tileOnLevel = levelTilemap.GetTile(levelCellPos);
+
+                if (tileOnThorn != null || tileOnLevel != tileTypes.emptyTile) continue;
+                if (!HasNeighbour4Dir(thornTilemap, tileTypes.thornTile, thornCellPos)) continue;
+                if (!HasNeighbour8Dir(tileTypes.wallTile, thornCellPos)
+                    && !HasNeighbour8Dir(tileTypes.fragileTile, thornCellPos)
+                    && !HasNeighbourBelow(tileTypes.bridgeTile, thornCellPos)) continue;
                 nextGrowCells.Add(new Vector3Int(x, y, 0));
             }
         }
         foreach(Vector3Int pos in nextGrowCells)
         {
-            tilemap.SetTile(pos, thornTile);
+            thornTilemap.SetTile(pos, tileTypes.thornTile);
         }
     }
 
-    private bool HasNeighbourBelow(TileBase tile, int x, int y)
+    private bool HasNeighbourBelow(TileBase tile, Vector3Int coord)
     {
-        if (tilemap.GetTile(new Vector3Int(x, y - 1, 0)) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.down) == tile) return true;
         return false;
     }
-    private bool HasNeighbour4Dir(TileBase tile, int x, int y)
+    private bool HasNeighbour4Dir(Tilemap tilemap, TileBase tile, Vector3Int coord)
     {
-        if (tilemap.GetTile(new Vector3Int(x - 1, y, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x + 1, y, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x, y - 1, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x, y + 1, 0)) == tile) return true;
+        if (tilemap.GetTile(coord + Vector3Int.left) == tile) return true;
+        if (tilemap.GetTile(coord + Vector3Int.right) == tile) return true;
+        if (tilemap.GetTile(coord + Vector3Int.down) == tile) return true;
+        if (tilemap.GetTile(coord + Vector3Int.up) == tile) return true;
         return false;
     }
 
-    private bool HasNeighbour8Dir(TileBase tile, int x, int y)
+    private bool HasNeighbour8Dir(TileBase tile, Vector3Int coord)
     {
-        if (tilemap.GetTile(new Vector3Int(x - 1, y, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x + 1, y, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x, y - 1, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x, y + 1, 0)) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.left) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.right) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.down) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.up) == tile) return true;
 
         // Diagonal
-        if (tilemap.GetTile(new Vector3Int(x - 1, y - 1, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x + 1, y + 1, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x + 1, y - 1, 0)) == tile) return true;
-        if (tilemap.GetTile(new Vector3Int(x - 1, y + 1, 0)) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.left + Vector3Int.up) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.right + Vector3Int.up) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.left + Vector3Int.down) == tile) return true;
+        if (GetTileInLevelFromThornMap(coord + Vector3Int.right + Vector3Int.down) == tile) return true;
 
         return false;
+    }
+
+    private TileBase GetTileInLevelFromThornMap(Vector3Int coord)
+    {
+        return levelTilemap.GetTile(levelTilemap.WorldToCell(thornTilemap.CellToWorld(coord)));
     }
 }
