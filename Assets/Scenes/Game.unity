@@ -228,6 +228,9 @@ MonoBehaviour:
   jumpForce: 1.8
   bulletSpawnPoint: {x: 0.4166667, y: 0.4166667}
   myBullet: {fileID: 6358886354979347415, guid: 547a6d8c765b8e6469a8915070814936, type: 3}
+  hitBox:
+    m_Position: {x: 0, y: 5, z: 0}
+    m_Size: {x: 4, y: 6, z: 0}
 --- !u!95 &875606727
 Animator:
   serializedVersion: 5
@@ -372,10 +375,10 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 1.4821429
-    y: 0.17708334
-    width: 3
-    height: 3
+    x: 0
+    y: 0
+    width: 1
+    height: 1
   near clip plane: 0.3
   far clip plane: 1000
   field of view: 60

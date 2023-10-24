@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UIElements;
 
 public class PixelCharacter : MonoBehaviour
 {
-    private Tilemap tilemap;
+    private Tilemap levelTilemap;
+    private Tilemap thornTilemap;
 
     [SerializeField] private TileTypes tileTypes;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private float walkSpeed, gravity, jumpForce;
     [SerializeField] private Vector2 bulletSpawnPoint;
     [SerializeField] private Bullet myBullet;
+    [SerializeField] private BoundsInt hitBox;
 
     private Vector2 velocity;
     private float xRemainder, yRemainder;
@@ -53,7 +56,8 @@ public class PixelCharacter : MonoBehaviour
         yRemainder = 0.0f;
         velocity = Vector2.zero;
 
-        tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        levelTilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        thornTilemap = GameObject.Find("ThornTilemap").GetComponent<Tilemap>();
         transform.position = GetEnterCoord();
 
         animator.CrossFade(idleAnimation, 0);
@@ -70,10 +74,8 @@ public class PixelCharacter : MonoBehaviour
 
     void Update()
     {
-        
-
         onFloor = false;
-        if (OverlapTile(tileTypes.floorTiles, transform.position + new Vector3(0, -1, 0) / ppu))
+        if (OverlapTile(tileTypes.floorTiles, transform.position + Vector3.down / ppu))
         {
             onFloor = true;
             canDoubleJump = true;
@@ -109,6 +111,11 @@ public class PixelCharacter : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyUp(KeyCode.UpArrow) && velocity.y > 0.0f)
+        {
+            velocity.y /= 2;
+        }
+
         if(Input.GetKeyDown(KeyCode.DownArrow) && OverlapTile(tileTypes.exitTile, transform.position))
         {
             exitLevel?.Invoke();
@@ -128,12 +135,7 @@ public class PixelCharacter : MonoBehaviour
 
         velocity.y += gravity;
 
-        
-
-        MoveX(velocity.x);
-        MoveY(velocity.y);
-
-        if(onFloor)
+        if (onFloor)
         {
             if (velocity.x == 0.0f) ChangeState(idleAnimation);
             else ChangeState(runAnimation);
@@ -143,14 +145,33 @@ public class PixelCharacter : MonoBehaviour
             if (velocity.y < 0.0f) ChangeState(fallAnimation); else ChangeState(jumpAnimation);
         }
 
+        MoveX(velocity.x);
+        MoveY(velocity.y);
 
+        
 
-
-
-        if (OverlapTile(tileTypes.thornTile, transform.position))
+        Bounds bounds = new Bounds(transform.position + (Vector3)hitBox.position / ppu, (Vector3)hitBox.size / ppu);
+        if (BoundsOverlapTile(thornTilemap, tileTypes.thornTile, bounds))
         {
             died?.Invoke();
         }
+    }
+    
+    private bool BoundsOverlapTile(Tilemap tilemap, TileBase tile, Bounds b)
+    {
+        if (tilemap == null) return false;
+
+        Vector3Int coord1 = tilemap.WorldToCell(new Vector3(b.min.x, b.min.y, 0));
+        Vector3Int coord2 = tilemap.WorldToCell(new Vector3(b.max.x, b.max.y, 0));
+
+        BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
+        TileBase[] tiles = new TileBase[area.size.x * area.size.y];
+        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        for (int i = 0; i < tiles.Length; i++)
+        {
+            if (tiles[i] == tile) return true;
+        }
+        return false;
     }
 
     private void MoveX(float amount)
@@ -210,13 +231,13 @@ public class PixelCharacter : MonoBehaviour
     }
     private bool OverlapTile(TileBase tile, Vector3 position)
     {        
-        if (tilemap == null) return false;
+        if (levelTilemap == null) return false;
 
-        Vector3Int coord1 = tilemap.WorldToCell(position - new Vector3((sprite.rect.width / 2 ) / ppu, 0, 0));
-        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width / 2 - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        Vector3Int coord1 = levelTilemap.WorldToCell(position - new Vector3((sprite.rect.width / 2 ) / ppu, 0, 0));
+        Vector3Int coord2 = levelTilemap.WorldToCell(position + new Vector3((sprite.rect.width / 2 - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
         BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
         TileBase[] tiles = new TileBase[area.size.x * area.size.y];
-        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        levelTilemap.GetTilesBlockNonAlloc(area, tiles);
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tiles[i] == tile) return true;
@@ -226,13 +247,13 @@ public class PixelCharacter : MonoBehaviour
 
     private bool OverlapTile(List<TileBase> tileList, Vector3 position)
     {
-        if (tilemap == null) return false;
+        if (levelTilemap == null) return false;
 
-        Vector3Int coord1 = tilemap.WorldToCell(position - new Vector3((sprite.rect.width / 2) / ppu, 0, 0));
-        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width / 2 - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        Vector3Int coord1 = levelTilemap.WorldToCell(position - new Vector3((sprite.rect.width / 2) / ppu, 0, 0));
+        Vector3Int coord2 = levelTilemap.WorldToCell(position + new Vector3((sprite.rect.width / 2 - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
         BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
         TileBase[] tiles = new TileBase[area.size.x * area.size.y];
-        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        levelTilemap.GetTilesBlockNonAlloc(area, tiles);
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tileList.Contains(tiles[i])) return true;
@@ -242,15 +263,15 @@ public class PixelCharacter : MonoBehaviour
 
     private Vector3 GetEnterCoord()
     {
-        if (tilemap == null) return Vector3.zero;
+        if (levelTilemap == null) return Vector3.zero;
 
-        BoundsInt bounds = tilemap.cellBounds;
+        BoundsInt bounds = levelTilemap.cellBounds;
         for (int x = bounds.xMin; x < bounds.xMax; x++)
         {
             for (int y = bounds.yMin; y < bounds.yMax; y++)
             {
-                TileBase tile = tilemap.GetTile(new Vector3Int(x, y, 0));
-                if(tile == tileTypes.enterTile) return tilemap.CellToWorld(new Vector3Int(x,y,0));
+                TileBase tile = levelTilemap.GetTile(new Vector3Int(x, y, 0));
+                if(tile == tileTypes.enterTile) return levelTilemap.CellToWorld(new Vector3Int(x,y,0));
                 
             }
         }
@@ -259,8 +280,13 @@ public class PixelCharacter : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        // Bullet spawn point
         float flip = spriteRenderer.flipX ? -1.0f : 1.0f;
         //float flip = 1;
         Gizmos.DrawWireSphere(new Vector3(transform.position.x + bulletSpawnPoint.x * flip, transform.position.y + bulletSpawnPoint.y, 0), 0.25f);
+
+        // Hit box
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawWireCube(transform.position + (Vector3)hitBox.position / ppu, (Vector3)hitBox.size / ppu);
     }
 }
