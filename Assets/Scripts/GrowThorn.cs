@@ -45,17 +45,27 @@ public class GrowThorn : MonoBehaviour
                 Vector3Int levelCellPos = levelTilemap.WorldToCell(thornTilemap.CellToWorld(thornCellPos));
                 TileBase tileOnLevel = levelTilemap.GetTile(levelCellPos);
 
+                if (tileOnThorn == tileTypes.stemTile)
+                {
+                    nextThornCells.Add(thornCellPos);
+                    continue;
+                }
+
                 if (tileOnThorn != null || tileOnLevel != tileTypes.emptyTile) continue;
                 if (!HasNeighbour4Dir(thornTilemap, tileTypes.thornTile, thornCellPos)) continue;
                 if (!HasNeighbour8Dir(tileTypes.wallTile, thornCellPos)
                     && !HasNeighbour8Dir(tileTypes.fragileTile, thornCellPos)
                     && !HasNeighbourBelow(tileTypes.bridgeTile, thornCellPos)) continue;
-                nextThornCells.Add(new Vector3Int(x, y, 0));
+                nextStemCells.Add(thornCellPos);
             }
         }
         foreach(Vector3Int pos in nextThornCells)
         {
             thornTilemap.SetTile(pos, tileTypes.thornTile);
+        }
+        foreach (Vector3Int pos in nextStemCells)
+        {
+            thornTilemap.SetTile(pos, tileTypes.stemTile);
         }
     }
 
