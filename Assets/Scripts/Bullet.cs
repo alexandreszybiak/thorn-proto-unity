@@ -7,7 +7,8 @@ public class Bullet : MonoBehaviour
 {
     private const float ppu = 12.0f;
 
-    private Tilemap tilemap;
+    private Tilemap levelTilemap;
+    private Tilemap thornTilemap;
     private Sprite sprite;
 
     [SerializeField] private TileTypes tileTypes;
@@ -38,7 +39,8 @@ public class Bullet : MonoBehaviour
         xRemainder = 0.0f;
         yRemainder = 0.0f;
 
-        tilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        levelTilemap = GameObject.Find("Tilemap").GetComponent<Tilemap>();
+        thornTilemap = GameObject.Find("ThornTilemap").GetComponent<Tilemap>();
 
     }
     void Update()
@@ -54,24 +56,26 @@ public class Bullet : MonoBehaviour
     {
         xRemainder += amount;
         int move = Mathf.RoundToInt(xRemainder);
-        if (move != 0)
+        if (move == 0) return;
+        
+        xRemainder -= move;
+        int sign = Math.Sign(move);
+
+        while (move != 0)
         {
-            xRemainder -= move;
-            int sign = Math.Sign(move);
-            while (move != 0)
-            {
-                var direction = new Vector3(sign, 0, 0) / ppu;
+            var direction = new Vector3(sign, 0, 0) / ppu;
 
-                bool shouldStop = false;
+            bool shouldStop = false;
 
-                ManageOverlap(transform.position + direction, out shouldStop);
+            ManageOverlap(levelTilemap, transform.position + direction, out shouldStop);
+            ManageOverlap(thornTilemap, transform.position + direction, out shouldStop);
 
-                if (shouldStop) break;
+            if (shouldStop) break;
 
-                transform.Translate(direction);
-                move -= sign;
-            }
+            transform.Translate(direction);
+            move -= sign;
         }
+        
     }
 
     private void MoveY(float amount)
@@ -105,7 +109,7 @@ public class Bullet : MonoBehaviour
 
     }
 
-    private void ManageOverlap(Vector3 position, out bool stopMovement)
+    private void ManageOverlap(Tilemap tilemap, Vector3 position, out bool stopMovement)
     {
         stopMovement = false;
         var tiles = new List<Vector3Int>();
@@ -127,7 +131,7 @@ public class Bullet : MonoBehaviour
                 }
                 if (tileTypes.breakableTiles.Contains(tile))
                 {
-                    tilemap.SetTile(coord, tileTypes.emptyTile);
+                    tilemap.SetTile(coord, null);
                     stopMovement = true;
                     Collide();
                 }
@@ -137,13 +141,13 @@ public class Bullet : MonoBehaviour
     }
     private bool OverlapTile(TileBase tile, Vector3 position)
     {
-        if (tilemap == null) return false;
+        if (levelTilemap == null) return false;
 
-        Vector3Int coord1 = tilemap.WorldToCell(position);
-        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        Vector3Int coord1 = levelTilemap.WorldToCell(position);
+        Vector3Int coord2 = levelTilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
         BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
         TileBase[] tiles = new TileBase[area.size.x * area.size.y];
-        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        levelTilemap.GetTilesBlockNonAlloc(area, tiles);
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tiles[i] == tile)
@@ -156,13 +160,13 @@ public class Bullet : MonoBehaviour
 
     private bool OverlapTile(List<TileBase> tileList, Vector3 position)
     {
-        if (tilemap == null) return false;
+        if (levelTilemap == null) return false;
 
-        Vector3Int coord1 = tilemap.WorldToCell(position);
-        Vector3Int coord2 = tilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
+        Vector3Int coord1 = levelTilemap.WorldToCell(position);
+        Vector3Int coord2 = levelTilemap.WorldToCell(position + new Vector3((sprite.rect.width - 1) / ppu, (sprite.rect.height - 1) / ppu, 0));
         BoundsInt area = new BoundsInt(coord1, coord2 - coord1 + Vector3Int.one);
         TileBase[] tiles = new TileBase[area.size.x * area.size.y];
-        tilemap.GetTilesBlockNonAlloc(area, tiles);
+        levelTilemap.GetTilesBlockNonAlloc(area, tiles);
         for (int i = 0; i < tiles.Length; i++)
         {
             if (tileList.Contains(tiles[i])) return true;

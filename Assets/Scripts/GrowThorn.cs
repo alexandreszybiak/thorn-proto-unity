@@ -32,7 +32,9 @@ public class GrowThorn : MonoBehaviour
 
     private void Grow()
     {
-        List<Vector3Int> nextGrowCells = new List<Vector3Int>();
+        List<Vector3Int> nextThornCells = new List<Vector3Int>();
+        List<Vector3Int> nextStemCells = new List<Vector3Int>();
+
         BoundsInt bounds = thornTilemap.cellBounds;
         for(int x = bounds.xMin; x < bounds.xMax; x++)
         {
@@ -48,10 +50,10 @@ public class GrowThorn : MonoBehaviour
                 if (!HasNeighbour8Dir(tileTypes.wallTile, thornCellPos)
                     && !HasNeighbour8Dir(tileTypes.fragileTile, thornCellPos)
                     && !HasNeighbourBelow(tileTypes.bridgeTile, thornCellPos)) continue;
-                nextGrowCells.Add(new Vector3Int(x, y, 0));
+                nextThornCells.Add(new Vector3Int(x, y, 0));
             }
         }
-        foreach(Vector3Int pos in nextGrowCells)
+        foreach(Vector3Int pos in nextThornCells)
         {
             thornTilemap.SetTile(pos, tileTypes.thornTile);
         }
