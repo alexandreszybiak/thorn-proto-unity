@@ -129,13 +129,19 @@ public class Bullet : MonoBehaviour
                     stopMovement = true;
                     Collide();
                 }
-                if (tileTypes.breakableTiles.Contains(tile))
+                if (tileTypes.thornTiles.Contains(tile))
                 {
-                    tilemap.SetTile(coord, null);
+                    DestroyThornTile(coord);
                     stopMovement = true;
                     Collide();
                 }
-                
+                if (tile == tileTypes.fragileTile)
+                {
+                    tilemap.SetTile(coord, tileTypes.emptyTile);
+                    stopMovement = true;
+                    Collide();
+                }
+
             }
         }
     }
@@ -177,5 +183,23 @@ public class Bullet : MonoBehaviour
     private void Collide()
     {
         Destroy(gameObject);
+    }
+
+    private void DestroyThornTile(Vector3Int coord)
+    {
+        var left = coord + Vector3Int.left;
+        if (tileTypes.thornTiles.Contains(thornTilemap.GetTile(left))) thornTilemap.SetTile(left, null);
+
+        var right = coord + Vector3Int.right;
+        if (tileTypes.thornTiles.Contains(thornTilemap.GetTile(right))) thornTilemap.SetTile(right, null);
+
+        var up = coord + Vector3Int.up;
+        if (tileTypes.thornTiles.Contains(thornTilemap.GetTile(up))) thornTilemap.SetTile(up, null);
+
+        var down = coord + Vector3Int.down;
+        if (tileTypes.thornTiles.Contains(thornTilemap.GetTile(down))) thornTilemap.SetTile(down, null);
+
+        thornTilemap.SetTile(coord, null);
+
     }
 }
